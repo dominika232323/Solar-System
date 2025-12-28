@@ -1,9 +1,10 @@
-from physical_consts import *
+from physical_consts import AU
 
 WINDOW_WIDTH, WINDOW_HEIGHT =  800, 800
 
 SCALE = 390 / (30 * AU)
 RADIUS_SCALE = 3e-7
+TIMESTEP = 3600*24 # 1 day in seconds
 
 SUN_COLOR = (255, 255, 153)
 MERCURY_COLOR = (128, 128, 128)
