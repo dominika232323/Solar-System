@@ -1,5 +1,5 @@
 import math
-from simulation_consts import SCALE, WINDOW_HEIGHT, WINDOW_WIDTH, RADIUS_SCALE, TIMESTEP, WHITE
+from simulation_consts import SimulationConsts
 from physical_consts import G
 import pygame
 
@@ -21,24 +21,24 @@ class Planet:
     
     def draw(self, window, font):
         # position relative to the center of the window
-        x = self.x * SCALE + WINDOW_WIDTH / 2
-        y = self.y * SCALE + WINDOW_HEIGHT / 2
+        x = self.x * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
+        y = self.y * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
 
         if len(self.orbit) > 2:
             updated_points = []
             
             for point in self.orbit:
                 x, y = point
-                x = x * SCALE + WINDOW_WIDTH / 2
-                y = y * SCALE + WINDOW_HEIGHT / 2
+                x = x * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
+                y = y * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
                 updated_points.append((x, y))
 
             pygame.draw.lines(window, self.color, False, updated_points, 2)
 
-        pygame.draw.circle(window, self.color, (x, y), self.r * RADIUS_SCALE)
+        pygame.draw.circle(window, self.color, (x, y), self.r * SimulationConsts.RADIUS_SCALE)
 
         if not self.is_sun:
-            distance_text = font.render(f"{round(self.distance_to_sun / 1000, 1)}km", 1, WHITE)
+            distance_text = font.render(f"{round(self.distance_to_sun / 1000, 1)}km", 1, SimulationConsts.WHITE)
             window.blit(distance_text, (x - distance_text.get_width() / 2, y - distance_text.get_height() / 2))
 
     def compute_gravitational_forces(self, other):
@@ -70,10 +70,10 @@ class Planet:
             total_fx += fx
             total_fy += fy
 
-        self.v_x += total_fx / self.m * TIMESTEP
-        self.v_y += total_fy / self.m * TIMESTEP
+        self.v_x += total_fx / self.m * SimulationConsts.TIMESTEP
+        self.v_y += total_fy / self.m * SimulationConsts.TIMESTEP
 
-        self.x += self.v_x * TIMESTEP
-        self.y += self.v_y * TIMESTEP
+        self.x += self.v_x * SimulationConsts.TIMESTEP
+        self.y += self.v_y * SimulationConsts.TIMESTEP
 
         self.orbit.append((self.x, self.y))
