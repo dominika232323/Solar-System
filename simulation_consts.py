@@ -2,11 +2,11 @@ from physical_consts import AU
 
 
 class SimulationConsts:
-    WINDOW_WIDTH, WINDOW_HEIGHT =  800, 800
+    WINDOW_WIDTH, WINDOW_HEIGHT = 800, 800
 
     DEFAULT_SCALE = 390 / (30 * AU)
     DEFAULT_RADIUS_SCALE = 3e-7
-    DEFAULT_TIMESTEP = 3600 * 24 # 1 day in seconds
+    DEFAULT_TIMESTEP = 3600 * 24  # 1 day in seconds
 
     SCALE = 390 / (30 * AU)
     RADIUS_SCALE = 3e-7

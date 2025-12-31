@@ -1,9 +1,41 @@
-from pygame_gui import UIManager
-from pygame_gui.elements import UIButton, UIHorizontalSlider, UILabel
-
 from simulation_consts import SimulationConsts
 from planet import Planet
-from physical_consts import *
+from physical_consts import (
+    SUN_MASS,
+    SUN_RADIUS,
+    MERCURY_MASS,
+    MERCURY_RADIUS,
+    MERCURY_DISTANCE,
+    VENUS_MASS,
+    VENUS_RADIUS,
+    VENUS_DISTANCE,
+    EARTH_MASS,
+    EARTH_RADIUS,
+    EARTH_DISTANCE,
+    MARS_MASS,
+    MARS_RADIUS,
+    MARS_DISTANCE,
+    JUPITER_MASS,
+    JUPITER_RADIUS,
+    JUPITER_DISTANCE,
+    SATURN_MASS,
+    SATURN_RADIUS,
+    SATURN_DISTANCE,
+    URANUS_DISTANCE,
+    URANUS_RADIUS,
+    URANUS_MASS,
+    NEPTUN_MASS,
+    NEPTUN_RADIUS,
+    NEPTUN_DISTANCE,
+    MERCURY_VELOCITY,
+    VENUS_VELOCITY,
+    EARTH_VELOCITY,
+    MARS_VELOCITY,
+    JUPITER_VELOCITY,
+    SATURN_VELOCITY,
+    URANUS_VELOCITY,
+    NEPTUN_VELOCITY,
+)
 
 import pygame
 import pygame_gui
@@ -19,7 +51,7 @@ def initialize_planets():
     saturn = Planet(SATURN_MASS, SATURN_RADIUS, SATURN_DISTANCE, 0, SimulationConsts.SATURN_COLOR)
     uranus = Planet(URANUS_MASS, URANUS_RADIUS, URANUS_DISTANCE, 0, SimulationConsts.URANUS_COLOR)
     neptun = Planet(NEPTUN_MASS, NEPTUN_RADIUS, NEPTUN_DISTANCE, 0, SimulationConsts.NEPTUN_COLOR)
-    
+
     mercury.v_y = MERCURY_VELOCITY
     venus.v_y = VENUS_VELOCITY
     earth.v_y = EARTH_VELOCITY
@@ -31,6 +63,7 @@ def initialize_planets():
 
     return [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptun]
 
+
 def main():
     pygame.init()
     WINDOW = pygame.display.set_mode((SimulationConsts.WINDOW_WIDTH, SimulationConsts.WINDOW_HEIGHT))
@@ -39,13 +72,23 @@ def main():
 
     manager = pygame_gui.UIManager((SimulationConsts.WINDOW_WIDTH, SimulationConsts.WINDOW_HEIGHT))
 
-    draw_orbit_checkbox, radius_label, radius_slider, scale_label, scale_slider, show_distance_checkbox, timestep_label, timestep_slider, reset_button = initialize_panel(manager)
+    (
+        draw_orbit_checkbox,
+        radius_label,
+        radius_slider,
+        scale_label,
+        scale_slider,
+        show_distance_checkbox,
+        timestep_label,
+        timestep_slider,
+        reset_button,
+    ) = initialize_panel(manager)
 
     run_simulation = True
-    clock = pygame.time.Clock() 
-    
+    clock = pygame.time.Clock()
+
     planets = initialize_planets()
-    
+
     while run_simulation:
         time_delta = clock.tick(60) / 1000
 
@@ -56,9 +99,7 @@ def main():
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == draw_orbit_checkbox:
                     SimulationConsts.DRAW_ORBIT = not SimulationConsts.DRAW_ORBIT
-                    draw_orbit_checkbox.set_text(
-                        "Draw Orbit: ON" if SimulationConsts.DRAW_ORBIT else "Draw Orbit: OFF"
-                    )
+                    draw_orbit_checkbox.set_text("Draw Orbit: ON" if SimulationConsts.DRAW_ORBIT else "Draw Orbit: OFF")
                 elif event.ui_element == show_distance_checkbox:
                     SimulationConsts.SHOW_DISTANCE = not SimulationConsts.SHOW_DISTANCE
                     show_distance_checkbox.set_text(
@@ -107,15 +148,16 @@ def main():
     pygame.quit()
 
 
-def initialize_panel(manager: UIManager) -> tuple[
-    UIButton, UILabel, UIHorizontalSlider, UILabel, UIHorizontalSlider, UIButton, UILabel, UIHorizontalSlider, UIButton]:
-
+def initialize_panel(manager):
     panel_width = 260
     panel_height = 280
     panel = pygame_gui.elements.UIPanel(
-        relative_rect=pygame.Rect((SimulationConsts.WINDOW_WIDTH - panel_width - 10, 10), (panel_width, panel_height)),
+        relative_rect=pygame.Rect(
+            (SimulationConsts.WINDOW_WIDTH - panel_width - 10, 10),
+            (panel_width, panel_height),
+        ),
         starting_height=1,
-        manager=manager
+        manager=manager,
     )
 
     # SCALE slider
@@ -124,12 +166,13 @@ def initialize_panel(manager: UIManager) -> tuple[
         start_value=SimulationConsts.SCALE,
         value_range=(SimulationConsts.SCALE * 0.1, SimulationConsts.SCALE * 10),
         manager=manager,
-        container=panel
+        container=panel,
     )
     scale_label = pygame_gui.elements.UILabel(
         pygame.Rect(10, 30, panel_width - 20, 20),
         text=f"SCALE: {SimulationConsts.SCALE:.2e}",
-        manager=manager, container=panel
+        manager=manager,
+        container=panel,
     )
 
     # TIMESTEP slider
@@ -138,28 +181,31 @@ def initialize_panel(manager: UIManager) -> tuple[
         start_value=SimulationConsts.TIMESTEP,
         value_range=(1000, 3600 * 24 * 30),
         manager=manager,
-        container=panel
+        container=panel,
     )
     timestep_label = pygame_gui.elements.UILabel(
         pygame.Rect(10, 90, panel_width - 20, 20),
         text=f"TIMESTEP: {SimulationConsts.TIMESTEP:.2e}",
         manager=manager,
-        container=panel
+        container=panel,
     )
 
     # RADIUS_SCALE slider
     radius_slider = pygame_gui.elements.UIHorizontalSlider(
         relative_rect=pygame.Rect(10, 130, panel_width - 20, 20),
         start_value=SimulationConsts.RADIUS_SCALE,
-        value_range=(SimulationConsts.RADIUS_SCALE / 10, SimulationConsts.RADIUS_SCALE * 10),
+        value_range=(
+            SimulationConsts.RADIUS_SCALE / 10,
+            SimulationConsts.RADIUS_SCALE * 10,
+        ),
         manager=manager,
-        container=panel
+        container=panel,
     )
     radius_label = pygame_gui.elements.UILabel(
         pygame.Rect(10, 150, panel_width - 20, 20),
         text=f"RADIUS_SCALE: {SimulationConsts.RADIUS_SCALE:.2e}",
         manager=manager,
-        container=panel
+        container=panel,
     )
 
     # DRAW_ORBIT checkbox
@@ -167,7 +213,7 @@ def initialize_panel(manager: UIManager) -> tuple[
         relative_rect=pygame.Rect(10, 180, panel_width - 20, 30),
         text="DRAW_ORBIT",
         manager=manager,
-        container=panel
+        container=panel,
     )
 
     # SHOW_DISTANCE checkbox
@@ -175,7 +221,7 @@ def initialize_panel(manager: UIManager) -> tuple[
         relative_rect=pygame.Rect(10, 210, panel_width - 20, 30),
         text="SHOW_DISTANCE",
         manager=manager,
-        container=panel
+        container=panel,
     )
 
     # RESET button
@@ -183,10 +229,20 @@ def initialize_panel(manager: UIManager) -> tuple[
         relative_rect=pygame.Rect(10, 240, panel_width - 20, 30),
         text="RESET",
         manager=manager,
-        container=panel
+        container=panel,
     )
 
-    return draw_orbit_checkbox, radius_label, radius_slider, scale_label, scale_slider, show_distance_checkbox, timestep_label, timestep_slider, reset_button
+    return (
+        draw_orbit_checkbox,
+        radius_label,
+        radius_slider,
+        scale_label,
+        scale_slider,
+        show_distance_checkbox,
+        timestep_label,
+        timestep_slider,
+        reset_button,
+    )
 
 
 if __name__ == "__main__":
