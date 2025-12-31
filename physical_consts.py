@@ -1,13 +1,13 @@
-AU = 1.496e11 # Astronomical Unit - average distance between the centers of the Sun and Earth (m)
-G = 6.67428e-11 # m^3 * kg^(−1) * s^(−2)
+AU = 1.496e11  # Astronomical Unit - average distance between the centers of the Sun and Earth (m)
+G = 6.67428e-11  # m^3 * kg^(−1) * s^(−2)
 
-SUN_MASS = 1.989e30 # kg
-SUN_RADIUS = 6.957e8 # m
+SUN_MASS = 1.989e30  # kg
+SUN_RADIUS = 6.957e8  # m
 
 MERCURY_MASS = 3.30e23
 MERCURY_RADIUS = 2.44e6
-MERCURY_DISTANCE = 0.387 * AU # m
-MERCURY_VELOCITY = 4.74e4 # m/s
+MERCURY_DISTANCE = 0.387 * AU  # m
+MERCURY_VELOCITY = 4.74e4  # m/s
 
 VENUS_MASS = 4.87e24
 VENUS_RADIUS = 6.052e6
