@@ -24,7 +24,7 @@ class Planet:
         x = self.x * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
         y = self.y * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
 
-        if len(self.orbit) > 2:
+        if SimulationConsts.DRAW_ORBIT and len(self.orbit) > 2:
             updated_points = []
             
             for point in self.orbit:
@@ -37,7 +37,7 @@ class Planet:
 
         pygame.draw.circle(window, self.color, (x, y), self.r * SimulationConsts.RADIUS_SCALE)
 
-        if not self.is_sun:
+        if SimulationConsts.SHOW_DISTANCE and not self.is_sun:
             distance_text = font.render(f"{round(self.distance_to_sun / 1000, 1)}km", 1, SimulationConsts.WHITE)
             window.blit(distance_text, (x - distance_text.get_width() / 2, y - distance_text.get_height() / 2))
 
