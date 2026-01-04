@@ -39,6 +39,7 @@ from physical_consts import (
 
 import pygame
 import pygame_gui
+import math
 
 
 def initialize_planets():
@@ -66,7 +67,7 @@ def initialize_planets():
 
 def main():
     pygame.init()
-    WINDOW = pygame.display.set_mode((SimulationConsts.WINDOW_WIDTH, SimulationConsts.WINDOW_HEIGHT))
+    WINDOW = pygame.display.set_mode((SimulationConsts.WINDOW_WIDTH, SimulationConsts.WINDOW_HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Solar System Simulation")
     FONT = pygame.font.SysFont("comicsans", 16)
 
@@ -121,11 +122,41 @@ def main():
                     SimulationConsts.SHOW_DISTANCE = True
                     show_distance_checkbox.set_text("Show distance: ON")
 
+                    SimulationConsts.CAMERA_X = 0
+                    SimulationConsts.CAMERA_Y = 0
+
                     planets = initialize_planets()
+
+            if event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+                if event.ui_element == scale_slider:
+                    apply_zoom(event.value, (SimulationConsts.WINDOW_WIDTH // 2, SimulationConsts.WINDOW_HEIGHT // 2))
+
+            if event.type == pygame.MOUSEWHEEL:
+                factor = SimulationConsts.ZOOM_FACTOR if event.y > 0 else 1 / SimulationConsts.ZOOM_FACTOR
+                apply_zoom(SimulationConsts.SCALE * factor, pygame.mouse.get_pos())
+
+            if event.type == pygame.VIDEORESIZE:
+                SimulationConsts.WINDOW_WIDTH = event.w
+                SimulationConsts.WINDOW_HEIGHT = event.h
+
+                WINDOW = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                manager.set_window_resolution((event.w, event.h))
 
             manager.process_events(event)
 
-        SimulationConsts.SCALE = scale_slider.get_current_value()
+        keys = pygame.key.get_pressed()
+        speed = SimulationConsts.CAMERA_SPEED * math.log10(SimulationConsts.SCALE * 1e9)
+
+        if keys[pygame.K_LEFT]:
+            SimulationConsts.CAMERA_X -= speed
+        if keys[pygame.K_RIGHT]:
+            SimulationConsts.CAMERA_X += speed
+        if keys[pygame.K_UP]:
+            SimulationConsts.CAMERA_Y -= speed
+        if keys[pygame.K_DOWN]:
+            SimulationConsts.CAMERA_Y += speed
+
+        scale_slider.set_current_value(SimulationConsts.SCALE)
         scale_label.set_text(f"SCALE: {SimulationConsts.SCALE:.2e}")
 
         SimulationConsts.TIMESTEP = timestep_slider.get_current_value()
@@ -164,7 +195,7 @@ def initialize_panel(manager):
     scale_slider = pygame_gui.elements.UIHorizontalSlider(
         relative_rect=pygame.Rect(10, 10, panel_width - 20, 20),
         start_value=SimulationConsts.SCALE,
-        value_range=(SimulationConsts.SCALE * 0.1, SimulationConsts.SCALE * 10),
+        value_range=(SimulationConsts.MIN_SCALE, SimulationConsts.MAX_SCALE),
         manager=manager,
         container=panel,
     )
@@ -243,6 +274,22 @@ def initialize_panel(manager):
         timestep_slider,
         reset_button,
     )
+
+
+def apply_zoom(new_scale, mouse_pos):
+    old_scale = SimulationConsts.SCALE
+    new_scale = max(SimulationConsts.MIN_SCALE, min(new_scale, SimulationConsts.MAX_SCALE))
+
+    mx, my = mouse_pos
+
+    # getting real coordinates, opposite of drawing
+    world_x = (mx - SimulationConsts.WINDOW_WIDTH / 2) / old_scale + SimulationConsts.CAMERA_X
+    world_y = (my - SimulationConsts.WINDOW_HEIGHT / 2) / old_scale + SimulationConsts.CAMERA_Y
+
+    SimulationConsts.SCALE = new_scale
+    # maintaining point's position
+    SimulationConsts.CAMERA_X += (world_x - SimulationConsts.CAMERA_X) * (1 - old_scale / new_scale)
+    SimulationConsts.CAMERA_Y += (world_y - SimulationConsts.CAMERA_Y) * (1 - old_scale / new_scale)
 
 
 if __name__ == "__main__":

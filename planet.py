@@ -17,26 +17,29 @@ class Planet:
 
         self.v_x = 0  # horizontal velocity component
         self.v_y = 0  # vertical velocity component
+        self.a_x = 0.0 # horizontal acceleration component
+        self.a_y = 0.0 # vertical acceleration component
 
         self.orbit = []  # points on the orbit
 
     def draw(self, window, font):
         # position relative to the center of the window
-        x = self.x * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
-        y = self.y * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
+        x = (self.x - SimulationConsts.CAMERA_X) * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
+        y = (self.y - SimulationConsts.CAMERA_Y) * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
 
         if SimulationConsts.DRAW_ORBIT and len(self.orbit) > 2:
             updated_points = []
 
             for point in self.orbit:
                 x, y = point
-                x = x * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
-                y = y * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
+                x = (x - SimulationConsts.CAMERA_X) * SimulationConsts.SCALE + SimulationConsts.WINDOW_WIDTH / 2
+                y = (y - SimulationConsts.CAMERA_Y) * SimulationConsts.SCALE + SimulationConsts.WINDOW_HEIGHT / 2
                 updated_points.append((x, y))
 
             pygame.draw.lines(window, self.color, False, updated_points, 2)
 
-        pygame.draw.circle(window, self.color, (x, y), self.r * SimulationConsts.RADIUS_SCALE)
+        screen_radius = max(2, self.r * SimulationConsts.RADIUS_SCALE)
+        pygame.draw.circle(window, self.color, (x, y), screen_radius)
 
         if SimulationConsts.SHOW_DISTANCE and not self.is_sun:
             distance_text = font.render(f"{round(self.distance_to_sun / 1000, 1)}km", 1, SimulationConsts.WHITE)
@@ -62,7 +65,10 @@ class Planet:
 
         return force_x, force_y
 
-    def update_position(self, planets):
+    def update_position(self, planets): # euler method
+        if self.is_sun:
+            return
+
         total_fx = 0
         total_fy = 0
 
@@ -81,3 +87,29 @@ class Planet:
         self.y += self.v_y * SimulationConsts.TIMESTEP
 
         self.orbit.append((self.x, self.y))
+
+    def update_position_prim(self, planets): # verlet method
+        if self.is_sun:
+            return
+        
+        self.v_x += 0.5 * self.a_x * SimulationConsts.TIMESTEP
+        self.v_y += 0.5 * self.a_y * SimulationConsts.TIMESTEP
+          
+        self.x += self.v_x * SimulationConsts.TIMESTEP
+        self.y += self.v_y * SimulationConsts.TIMESTEP
+          
+        self.a_x, self.a_y = self.get_total_accel(planets)
+        
+        self.v_x += 0.5 * self.a_x * SimulationConsts.TIMESTEP
+        self.v_y += 0.5 * self.a_y * SimulationConsts.TIMESTEP
+          
+        self.orbit.append((self.x, self.y))
+
+    def get_total_accel(self, planets):
+        ax, ay = 0, 0
+        for p in planets:
+            if p == self: continue
+            fx, fy = self.compute_gravitational_forces(p)
+            ax += fx / self.m
+            ay += fy / self.m
+        return ax, ay

@@ -9,6 +9,8 @@ class SimulationConsts:
     DEFAULT_TIMESTEP = 3600 * 24  # 1 day in seconds
 
     SCALE = 390 / (30 * AU)
+    MIN_SCALE = SCALE * 0.1
+    MAX_SCALE = SCALE * 10
     RADIUS_SCALE = 3e-7
     TIMESTEP = 3600 * 24  # 1 day in seconds
 
@@ -26,3 +28,9 @@ class SimulationConsts:
 
     DRAW_ORBIT = True
     SHOW_DISTANCE = True
+
+    CAMERA_X = 0.0
+    CAMERA_Y = 0.0
+
+    CAMERA_SPEED = 5e9
+    ZOOM_FACTOR = 1.1
