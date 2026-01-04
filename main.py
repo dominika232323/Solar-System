@@ -68,7 +68,7 @@ def initialize_planets():
 
 def main():
     parser = argparse.ArgumentParser(description="Solar System Simulation")
-    parser.add_argument("--method", choices=["euler", "verlet", "runge-kutta"], default="euler", help="Numerical integration method")
+    parser.add_argument("--method", choices=["euler", "verlet", "rk4"], default="euler", help="Numerical integration method")
     args = parser.parse_args()
     SimulationConsts.INTEGRATION_METHOD = args.method
 
@@ -179,12 +179,12 @@ def main():
         WINDOW.fill((0, 0, 0))
 
         for planet in planets:
-            if SimulationConsts.INTEGRATION_METHOD == "euler":
-                planet.update_position_euler(planets)
-            elif SimulationConsts.INTEGRATION_METHOD == "verlet":
+            if SimulationConsts.INTEGRATION_METHOD == "verlet":
                 planet.update_position_verlet(planets)
-            else:
+            elif SimulationConsts.INTEGRATION_METHOD == "rk4":
                 planet.update_position_rk4(planets)
+            else:
+                planet.update_position_euler(planets)
             planet.draw(WINDOW, FONT)
 
         manager.draw_ui(WINDOW)
