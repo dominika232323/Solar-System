@@ -40,6 +40,7 @@ from physical_consts import (
 import pygame
 import pygame_gui
 import math
+import argparse
 
 
 def initialize_planets():
@@ -66,6 +67,16 @@ def initialize_planets():
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Solar System Simulation")
+    parser.add_argument(
+        "--method",
+        choices=["euler", "verlet"],
+        default="euler",
+        help="Numerical integration method"
+    )
+    args = parser.parse_args()
+    SimulationConsts.INTEGRATION_METHOD = args.method
+
     pygame.init()
     WINDOW = pygame.display.set_mode((SimulationConsts.WINDOW_WIDTH, SimulationConsts.WINDOW_HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Solar System Simulation")
@@ -74,6 +85,7 @@ def main():
     manager = pygame_gui.UIManager((SimulationConsts.WINDOW_WIDTH, SimulationConsts.WINDOW_HEIGHT))
 
     (
+        panel,
         draw_orbit_checkbox,
         radius_label,
         radius_slider,
@@ -85,6 +97,7 @@ def main():
         reset_button,
     ) = initialize_panel(manager)
 
+    panel.set_relative_position((SimulationConsts.WINDOW_WIDTH - panel.rect.width - 10, 10))
     run_simulation = True
     clock = pygame.time.Clock()
 
@@ -141,6 +154,7 @@ def main():
 
                 WINDOW = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
                 manager.set_window_resolution((event.w, event.h))
+                panel.set_relative_position((SimulationConsts.WINDOW_WIDTH - panel.rect.width - 10, 10))
 
             manager.process_events(event)
 
@@ -170,7 +184,10 @@ def main():
         WINDOW.fill((0, 0, 0))
 
         for planet in planets:
-            planet.update_position(planets)
+            if SimulationConsts.INTEGRATION_METHOD == "euler":
+                planet.update_position(planets)
+            else:
+                planet.update_position_prim(planets)
             planet.draw(WINDOW, FONT)
 
         manager.draw_ui(WINDOW)
@@ -264,6 +281,7 @@ def initialize_panel(manager):
     )
 
     return (
+        panel,
         draw_orbit_checkbox,
         radius_label,
         radius_slider,

@@ -34,3 +34,5 @@ class SimulationConsts:
 
     CAMERA_SPEED = 5e9
     ZOOM_FACTOR = 1.1
+
+    INTEGRATION_METHOD = "euler"
