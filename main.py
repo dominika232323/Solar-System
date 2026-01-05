@@ -68,7 +68,9 @@ def initialize_planets():
 
 def main():
     parser = argparse.ArgumentParser(description="Solar System Simulation")
-    parser.add_argument("--method", choices=["euler", "verlet", "rk4"], default="euler", help="Numerical integration method")
+    parser.add_argument(
+        "--method", choices=["euler", "verlet", "rk4"], default="euler", help="Numerical integration method"
+    )
     args = parser.parse_args()
     SimulationConsts.INTEGRATION_METHOD = args.method
 
