@@ -213,6 +213,7 @@ def main():
                     planet.update_position_verlet(planets)
                 else:
                     planet.update_position_euler(planets)
+                planet.draw(WINDOW, FONT)
 
         manager.draw_ui(WINDOW)
         pygame.display.update()
