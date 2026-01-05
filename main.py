@@ -36,7 +36,7 @@ from physical_consts import (
     URANUS_VELOCITY,
     NEPTUN_VELOCITY,
 )
-from interplanetary_physics import compute_state_rk4
+from nbody_physics import compute_state_rk4
 
 import pygame
 import pygame_gui
