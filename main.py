@@ -100,6 +100,11 @@ def main():
 
     planets = initialize_planets()
 
+    if SimulationConsts.INTEGRATION_METHOD == "verlet":
+        for p in planets:
+            if not p.is_sun:
+                p.a_x, p.a_y = p.get_total_accel(planets)
+
     while run_simulation:
         time_delta = clock.tick(60) / 1000
 
