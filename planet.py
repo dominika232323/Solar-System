@@ -17,8 +17,8 @@ class Planet:
 
         self.v_x = 0  # horizontal velocity component
         self.v_y = 0  # vertical velocity component
-        self.a_x = 0.0 # horizontal acceleration component
-        self.a_y = 0.0 # vertical acceleration component
+        self.a_x = 0.0  # horizontal acceleration component
+        self.a_y = 0.0  # vertical acceleration component
 
         self.orbit = []  # points on the orbit
 
@@ -64,14 +64,13 @@ class Planet:
         force_y = math.sin(theta) * force
 
         return force_x, force_y
-    
+
     def compute_gravitational_forces_at(self, other, x, y):
         distance_x = other.x - x
         distance_y = other.y - y
 
         distance2 = distance_x**2 + distance_y**2
 
-        
         if other.is_sun:
             self.distance_to_sun = math.sqrt(distance2)
 
@@ -109,31 +108,34 @@ class Planet:
     def update_position_verlet(self, planets):
         if self.is_sun:
             return
-        
+
         self.v_x += 0.5 * self.a_x * SimulationConsts.TIMESTEP
         self.v_y += 0.5 * self.a_y * SimulationConsts.TIMESTEP
-          
+
         self.x += self.v_x * SimulationConsts.TIMESTEP
         self.y += self.v_y * SimulationConsts.TIMESTEP
-          
+
         self.a_x, self.a_y = self.get_total_accel(planets)
-        
+
         self.v_x += 0.5 * self.a_x * SimulationConsts.TIMESTEP
         self.v_y += 0.5 * self.a_y * SimulationConsts.TIMESTEP
-          
+
         self.orbit.append((self.x, self.y))
 
     def get_total_accel(self, planets):
         ax, ay = 0, 0
+        
         for p in planets:
             if p == self:
                 continue
+        
             fx, fy = self.compute_gravitational_forces(p)
             ax += fx / self.m
             ay += fy / self.m
+        
         return ax, ay
 
-    def update_position_rk4(self, planets): # runge-kutta 4th order
+    def update_position_rk4(self, planets):  # runge-kutta 4th order
         if self.is_sun:
             return
 
@@ -148,7 +150,7 @@ class Planet:
         k2vy = ay2 * SimulationConsts.TIMESTEP
         k2x = (self.v_x + 0.5 * k1vx) * SimulationConsts.TIMESTEP
         k2y = (self.v_y + 0.5 * k1vy) * SimulationConsts.TIMESTEP
-        
+
         ax3, ay3 = self.accel_at(self.x + 0.5 * k2x, self.y + 0.5 * k2y, planets)
         k3vx = ax3 * SimulationConsts.TIMESTEP
         k3vy = ay3 * SimulationConsts.TIMESTEP
@@ -161,20 +163,23 @@ class Planet:
         k4x = (self.v_x + k3vx) * SimulationConsts.TIMESTEP
         k4y = (self.v_y + k3vy) * SimulationConsts.TIMESTEP
 
-        self.x += (k1x + 2*k2x + 2*k3x + k4x) / 6
-        self.y += (k1y + 2*k2y + 2*k3y + k4y) / 6
+        self.x += (k1x + 2 * k2x + 2 * k3x + k4x) / 6
+        self.y += (k1y + 2 * k2y + 2 * k3y + k4y) / 6
 
-        self.v_x += (k1vx + 2*k2vx + 2*k3vx + k4vx) / 6
-        self.v_y += (k1vy + 2*k2vy + 2*k3vy + k4vy) / 6
+        self.v_x += (k1vx + 2 * k2vx + 2 * k3vx + k4vx) / 6
+        self.v_y += (k1vy + 2 * k2vy + 2 * k3vy + k4vy) / 6
 
         self.orbit.append((self.x, self.y))
- 
+
     def accel_at(self, x, y, planets):
         ax, ay = 0.0, 0.0
+        
         for p in planets:
             if p is self:
                 continue
+        
             fx, fy = self.compute_gravitational_forces_at(p, x, y)
             ax += fx / self.m
             ay += fy / self.m
+        
         return ax, ay
