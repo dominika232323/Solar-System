@@ -36,6 +36,7 @@ from physical_consts import (
     URANUS_VELOCITY,
     NEPTUN_VELOCITY,
 )
+from interplanetary_physics import compute_state_rk4
 
 import pygame
 import pygame_gui
@@ -103,7 +104,7 @@ def main():
     if SimulationConsts.INTEGRATION_METHOD == "verlet":
         for p in planets:
             if not p.is_sun:
-                p.a_x, p.a_y = p.get_total_accel(planets)
+                p.a_x, p.a_y = p.compute_accelerations(planets)
 
     while run_simulation:
         time_delta = clock.tick(60) / 1000
@@ -185,14 +186,33 @@ def main():
 
         WINDOW.fill((0, 0, 0))
 
-        for planet in planets:
-            if SimulationConsts.INTEGRATION_METHOD == "verlet":
-                planet.update_position_verlet(planets)
-            elif SimulationConsts.INTEGRATION_METHOD == "rk4":
-                planet.update_position_rk4(planets)
-            else:
-                planet.update_position_euler(planets)
-            planet.draw(WINDOW, FONT)
+        if SimulationConsts.INTEGRATION_METHOD == "rk4":
+            sun = planets[0]
+            state = []
+            masses = []
+            for p in planets[1:]:
+                state.extend([p.x, p.y, p.v_x, p.v_y])
+                masses.append(p.m)
+
+            state = compute_state_rk4(state, masses, sun)
+
+            for i, p in enumerate(planets[1:]):  # update positions runge-kutta 4th order
+                p.x, p.y, p.v_x, p.v_y = state[4 * i : 4 * i + 4]
+                p.orbit.append((p.x, p.y))
+
+            sun.draw(WINDOW, FONT)
+            for planet in planets[1:]:  # draw and update distance to sun
+                planet.draw(WINDOW, FONT)
+                distance_x = sun.x - planet.x
+                distance_y = sun.y - planet.y
+                planet.distance_to_sun = math.sqrt(distance_x**2 + distance_y**2)
+
+        else:
+            for planet in planets:
+                if SimulationConsts.INTEGRATION_METHOD == "verlet":
+                    planet.update_position_verlet(planets)
+                else:
+                    planet.update_position_euler(planets)
 
         manager.draw_ui(WINDOW)
         pygame.display.update()
