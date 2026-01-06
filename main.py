@@ -120,7 +120,7 @@ def main():
                 elif event.ui_element == show_distance_checkbox:
                     SimulationConsts.SHOW_DISTANCE = not SimulationConsts.SHOW_DISTANCE
                     show_distance_checkbox.set_text(
-                        "Show distance: ON" if SimulationConsts.DRAW_ORBIT else "Show distance: OFF"
+                        "Show distance: ON" if SimulationConsts.SHOW_DISTANCE else "Show distance: OFF"
                     )
                 elif event.ui_element == reset_button:
                     SimulationConsts.SCALE = SimulationConsts.DEFAULT_SCALE
