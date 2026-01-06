@@ -65,23 +65,6 @@ class Planet:
 
         return force_x, force_y
 
-    def compute_gravitational_forces_at(self, other, x, y):
-        distance_x = other.x - x
-        distance_y = other.y - y
-
-        distance2 = distance_x**2 + distance_y**2
-
-        if other.is_sun:
-            self.distance_to_sun = math.sqrt(distance2)
-
-        force = G * self.m * other.m / distance2
-        theta = math.atan2(distance_y, distance_x)
-
-        force_x = math.cos(theta) * force
-        force_y = math.sin(theta) * force
-
-        return force_x, force_y
-
     def update_position_euler(self, planets):
         if self.is_sun:
             return
