@@ -36,7 +36,7 @@ from physical_consts import (
     URANUS_VELOCITY,
     NEPTUN_VELOCITY,
 )
-from nbody_physics import compute_state_rk4
+from nbody_physics import compute_state_rk4, compute_total_energy
 
 import pygame
 import pygame_gui
@@ -214,6 +214,10 @@ def main():
                 else:
                     planet.update_position_euler(planets)
                 planet.draw(WINDOW, FONT)
+
+        total_energy = compute_total_energy(planets)
+        energy_text = FONT.render(f"Total Energy: {total_energy:.3e} J", 1, SimulationConsts.WHITE)
+        WINDOW.blit(energy_text, (10, SimulationConsts.WINDOW_HEIGHT - 30))
 
         manager.draw_ui(WINDOW)
         pygame.display.update()

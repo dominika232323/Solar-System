@@ -64,3 +64,20 @@ def compute_state_rk4(state, masses, sun):
         state[i] + ((SimulationConsts.TIMESTEP / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]))
         for i in range(len(state))
     ]
+
+
+def compute_total_energy(planets):
+    E_k = 0  # kinetic energy
+    E_p = 0  # potential energy
+    n = len(planets)
+
+    for i, p in enumerate(planets):
+        E_k += 0.5 * p.m * (p.v_x**2 + p.v_y**2)
+        for j in range(i + 1, n):
+            other = planets[j]
+            distance_x = p.x - other.x
+            distance_y = p.y - other.y
+            r = math.sqrt(distance_x**2 + distance_y**2)
+            E_p += -G * p.m * other.m / r
+
+    return E_k + E_p
